@@ -10,19 +10,20 @@ module vga_display_top(
 
 //parameters
 defparam uart.CLOCK_FREQUENCY = 50_000_000;
-defparam uart.BAUD_RATE       = 1_000_000; //3_000_000;
+defparam uart.BAUD_RATE       = 3_000_000; //3_000_000;
+
+defparam ram.RAM_WORD_SIZE = 8;
 
 wire in_display_area;
 wire [9:0] pixel_x;
 wire [8:0] pixel_y;
 
 //memory connections
-wire [16:0] read_address;
-wire ram_out;
-reg [16:0] write_address;
-reg ram_in;
+wire [13:0] read_address;
+wire [7:0] ram_out;
+reg [13:0] write_address;
+reg [7:0] ram_in;
 reg we;
-
 
 //25 mhz pixel clock
 reg pixel_tick;
@@ -81,7 +82,7 @@ UART uart
 	.rxDataOUT(rxData)
 );
 
-reg [16:0] current_address;
+reg [13:0] current_address;
 reg do_rx_data = 1'b0;
 
 // 25 mhz pixel clock
@@ -93,19 +94,6 @@ end
 reg [12:0] period_counter;
 reg next_pixel;
 
-//always @(posedge clk)
-//begin
-//	if(pixel_tick) begin
-//		if(period_counter == 0) begin
-//			write_address <= write_address + lfsr_out;
-//			we <= 1'b1;
-//			ram_in <= next_pixel;
-//			next_pixel <= ~next_pixel;
-//		end
-//		period_counter <= period_counter + 1;
-//		lfsr_enable <= period_counter == 0;
-//	end
-//end
 
 always @(posedge clk)
 begin
@@ -114,8 +102,11 @@ begin
 		//txData <= rxData;
 		rxReset <= 1'b0; //negative reset
 		write_address <= current_address;				
-		ram_in <= rxData[0];	
+		ram_in <= rxData;	
 		current_address <= current_address + 1;
+		//address wrap around
+		if(current_address >= 9600-1)
+			current_address <= 0;
 		we <= 1'b1;
 		do_rx_data <= 1'b1;
 	end else if(do_rx_data) begin

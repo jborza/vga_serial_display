@@ -1,4 +1,10 @@
-module ram(
+module ram #
+(
+	parameter RAM_BITS = 320*240/8,
+	parameter RAM_ADDRESS_SIZE = $clog2(320*240/8)-1,
+	parameter RAM_WORD_SIZE = 8
+)
+(
 	clk, 
 	read_address,
 	d,
@@ -8,16 +14,16 @@ module ram(
 );
 	//inputs, outputs
 	input wire clk;
-	input [16:0] read_address;
-	input d; //input data
-	input [16:0] write_address;
-	output reg q; //output data
+	input [RAM_ADDRESS_SIZE:0] read_address;
+	input [RAM_WORD_SIZE-1:0] d; //input data
+	input [RAM_ADDRESS_SIZE:0] write_address;
+	output reg [RAM_WORD_SIZE-1:0] q; //output data
 	input  we;
 	
 	localparam RESOLUTION_X = 320;
 	localparam RESOLUTION_Y = 240;
 
-	reg mem [0:RESOLUTION_X*RESOLUTION_Y-1];
+	reg [RAM_WORD_SIZE-1:0] mem [0:(RAM_BITS)-1];
 	
 	initial begin;
 		$readmemb("ram.txt", mem);
