@@ -16,7 +16,7 @@ defparam ram.RAM_WORD_SIZE = 8;
 
 wire in_display_area;
 wire [9:0] pixel_x;
-wire [8:0] pixel_y;
+wire [9:0] pixel_y;
 
 //memory connections
 wire [13:0] read_address;
@@ -46,7 +46,7 @@ ram ram(
 );
 	
 pixel_generator pixgen(
-	.clk(clk),
+	.clk(pixel_tick),
 	.video_on(in_display_area),
 	.pixel_x(pixel_x),
 	.pixel_y(pixel_y),
