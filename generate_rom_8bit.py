@@ -1,6 +1,6 @@
 from PIL import Image
 # assuming 1bpp 320x240 png
-im = Image.open('g2.png')
+im = Image.open(sys.argv[1])
 
 def print_row(y):
     #get 8 bits at a time

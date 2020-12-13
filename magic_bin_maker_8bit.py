@@ -1,7 +1,9 @@
+# this is used to generate a binary file that we send over serial to display
+
 from PIL import Image
 import sys
 # assuming 1bpp 320x240 png
-im = Image.open('browser1.png')
+im = Image.open(sys.argv[1])
 
 def print_row(y):
     #get 8 bits at a time
